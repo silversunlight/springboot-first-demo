@@ -1,8 +1,13 @@
-package com.example.demo;
+package com.example.demo.controller;
 
+import com.example.demo.domain.Girl;
+import com.example.demo.repository.GirlReposity;
+import com.example.demo.service.GirlService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,11 +28,16 @@ public class GirlController {
 
     //新增一个
     @PostMapping(value = "/girls")
-    public Girl addGirl(@RequestParam("name") String name,
-                        @RequestParam("age") Integer age) {
+    public Girl addGirl(@Valid Girl girlin,
+                        //会把验证结果自动放入bindingresult
+                        BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            System.out.println(bindingResult.getFieldError().getDefaultMessage());
+            return null;
+        }
         Girl girl = new Girl();
-        girl.setName(name);
-        girl.setAge(age);
+        girl.setName(girlin.getName());
+        girl.setAge(girlin.getAge());
         return girlReposity.save(girl);
     }
 
